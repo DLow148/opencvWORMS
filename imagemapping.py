@@ -1,4 +1,4 @@
-#Edited by Derek Low to apply in GUI format
+#Edited by Derek Low
 import numpy as np
 import cv2
 import os, sys
@@ -79,6 +79,7 @@ def morphTriangle(img1, img2, img, t1, t2, t, alpha) :
     # Copy triangular region of the rectangular patch to the output image
     img[r[1]:r[1]+r[3], r[0]:r[0]+r[2]] = img[r[1]:r[1]+r[3], r[0]:r[0]+r[2]] * ( 1 - mask ) + imgRect * mask
 
+#DELAUNAY BUTTONS
 #on Button Press, open a file and record that pixel, and add a green dot to the button press
 def coordsToText(event):
     python_hotPink = "#FF69B4"
@@ -107,8 +108,10 @@ def textResetter():
     imgResize = ImageTk.PhotoImage(image1)
     canvas.create_image(0,0,image = imgResize, anchor = "nw")'''
 
+#BEZIER CURVE
 #Here's where we do all the Bezier curve stuff. Start off by generating the global array that will be used
 xys = [] #this is where the xys values will be stored for the bezier curve production
+points = []
 
 #This portion is the user-end portion that allows the user to select points and view the points they've selected
 def pointSelectBezier(event):
@@ -117,6 +120,19 @@ def pointSelectBezier(event):
     x2, y2 = (event.x +3), (event.y +3)
     canvas.create_oval(x1,y1,x2,y2, fill = python_yellow)
     xys.append((event.x,event.y))
+
+#This portion will take the points created by the Bezier functions and draw the actual curve
+def bezierDrawing():
+    ts = [t/100.0 for t in range(101)]
+    bezier = make_bezier(xys)
+    points.extend(bezier(ts))
+    #TO DO: Draw Points here onto the campus!
+
+def bezierHelper():
+    canvas.bind("<Button 1>", pointSelectBezier)
+    makeBezierButton = Button (root, test = "Make Bezier Curve!", command = bezierDrawing)
+    makeBezierButton.pack()
+
 
 #Functions for calculating the points of Bezier curves that I found on the internet at
 #http://stackoverflow.com/questions/246525/how-can-i-draw-a-bezier-curve-using-pythons-pil
@@ -182,7 +198,8 @@ if __name__ == '__main__' :
     pointButton.pack()
 
     #This button will allow you to place points for Bezier Curve selection
-
+    bezierButton = Button(root,text = "Set Points for Bezier!",command = bezierHelper)
+    bezierButton.pack()
 
     #This button will close the window, proceeding with the triangulation based on the files and points selected
     exitButton = Button(root,text = "Run Triangulation!", command = exitWindow)
