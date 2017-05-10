@@ -85,7 +85,7 @@ def coordsToText(event):
     python_hotPink = "#FF69B4"
     x1, y1 = (event.x-3), (event.y -3)
     x2, y2 = (event.x+3), (event.y +3)
-    canvas.create_oval(x1,y1,x2,y2, fill = python_green)
+    canvas.create_oval(x1,y1,x2,y2, fill = python_hotPink)
     f = open(File + ".txt","a")
     f.write(str(event.x) + " " +str(event.y)+"\n")
     f.close()
@@ -99,6 +99,13 @@ def coordsToTextHelper():
 #reset both the associated text file and the canvas to set new points
 def textResetter():
     os.remove(File+".txt")
+    canvas.delete("all")
+    canvas.create_image(0,0,image=img,anchor="nw")
+
+#delete the lists for Bezier Curve and points associated with it
+def deleteXYS():
+    del xys[:]
+    del points[:]
     canvas.delete("all")
     canvas.create_image(0,0,image=img,anchor="nw")
 
@@ -119,19 +126,29 @@ def pointSelectBezier(event):
     x1, y1 = (event.x -3), (event.y -3)
     x2, y2 = (event.x +3), (event.y +3)
     canvas.create_oval(x1,y1,x2,y2, fill = python_yellow)
-    xys.append((event.x,event.y))
+    xys.append([event.x,event.y])
 
 #This portion will take the points created by the Bezier functions and draw the actual curve
 def bezierDrawing():
     ts = [t/100.0 for t in range(101)]
     bezier = make_bezier(xys)
     points.extend(bezier(ts))
+    print (points)
+    for i in points:
+        python_white = "#FFFFFF"
+        x , y = int(i[0]), int(i[1])
+        print x
+        x1, y1 = (x -1),(y-1)
+        x2, y2 = (x +1),(y+1)
+        canvas.create_oval(x1,y1,x2,y2, fill = python_white)
     #TO DO: Draw Points here onto the campus!
 
 def bezierHelper():
     canvas.bind("<Button 1>", pointSelectBezier)
-    makeBezierButton = Button (root, test = "Make Bezier Curve!", command = bezierDrawing)
+    makeBezierButton = Button (root, text = "Make Bezier Curve!", command = bezierDrawing)
     makeBezierButton.pack()
+    makeBezierDeleter = Button (root, text = "Reset Bezier Points", command = deleteXYS)
+    makeBezierDeleter.pack()
 
 
 #Functions for calculating the points of Bezier curves that I found on the internet at
@@ -195,15 +212,15 @@ if __name__ == '__main__' :
     #This buton will allow you to select points and add them to a text file, and will also give you a reset button to
     #reset the points if need be
     pointButton = Button(root,text = "Set Points for Triangulation!", command = coordsToTextHelper)
-    pointButton.pack()
+    pointButton.pack(side=LEFT)
 
     #This button will allow you to place points for Bezier Curve selection
     bezierButton = Button(root,text = "Set Points for Bezier!",command = bezierHelper)
-    bezierButton.pack()
+    bezierButton.pack(side=LEFT)
 
     #This button will close the window, proceeding with the triangulation based on the files and points selected
     exitButton = Button(root,text = "Run Triangulation!", command = exitWindow)
-    exitButton.pack()
+    exitButton.pack(side=LEFT)
 
     #Run the main point-selection loop
     root.mainloop()
