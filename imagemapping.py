@@ -186,6 +186,8 @@ def pascal_row(n):
     else:
         result.extend(reversed(result))
     return result
+def saveImage():
+    canvas.postscript(file="NewWorms.eps")
 
 #quit window to move on to the Triangulation
 def exitWindow():
@@ -217,6 +219,10 @@ if __name__ == '__main__' :
     #This button will allow you to place points for Bezier Curve selection
     bezierButton = Button(root,text = "Set Points for Bezier!",command = bezierHelper)
     bezierButton.pack(side=LEFT)
+
+    #This button will save the image currently on the GUI
+    printButton = Button(root, text = "Save Image", command = saveImage)
+    printButton.pack(side=LEFT)
 
     #This button will close the window, proceeding with the triangulation based on the files and points selected
     exitButton = Button(root,text = "Run Triangulation!", command = exitWindow)
